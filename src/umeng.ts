@@ -6,10 +6,6 @@ interface CZC {
   push: (list: any[]) => void;
 }
 
-const window_ = (window as unknown) as Window &
-  typeof globalThis & { _czc: CZC };
-const _czc = window_._czc as CZC;
-
 /* 
  todo 把 id 改成自己站点的 id
 */
@@ -24,7 +20,9 @@ export async function visit() {
     document.body.appendChild(script);
     script.onload = resolve;
   }).then(() => {
-    _czc.push(["_setAccount", `${id}`]);
+    const window_ = (window as unknown) as Window &
+      typeof globalThis & { _czc: CZC };
+    window_._czc.push(["_setAccount", `${id}`]);
   });
 }
 
@@ -41,5 +39,13 @@ export function trigger(
   label?: string,
   value?: number
 ) {
-  _czc.push(["_trackEvent", category, action, label, value]);
+  const window_ = (window as unknown) as Window &
+    typeof globalThis & { _czc: CZC };
+  window_._czc.push([
+    "_trackEvent",
+    category,
+    action,
+    label,
+    value,
+  ]);
 }
